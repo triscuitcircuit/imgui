@@ -269,6 +269,7 @@ IM_MSVC_RUNTIME_CHECKS_RESTORE
 #define IM_IMSTR_ENSURE_HAS_END(s)  if (s.End == NULL) s.End = s.Begin + strlen(s.Begin)
 
 // String view class.
+#define IMGUI_HAS_IMSTR 1
 struct ImStrv
 {
     const char* Begin;
