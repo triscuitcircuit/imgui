@@ -7,7 +7,8 @@
 // Missing features:
 //  [ ] Renderer: User texture binding. Changes of ImTextureID aren't supported by this backend! See https://github.com/ocornut/imgui/pull/914
 
-// You can copy and use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
+// You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this. 
+// Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 
@@ -1550,17 +1551,17 @@ static void ImGui_ImplVulkan_RenderWindow(ImGuiViewport* viewport, void*)
     ImGui_ImplVulkanH_Frame* fd = &wd->Frames[wd->FrameIndex];
     ImGui_ImplVulkanH_FrameSemaphores* fsd = &wd->FrameSemaphores[wd->SemaphoreIndex];
     {
+        {
+          err = vkAcquireNextImageKHR(v->Device, wd->Swapchain, UINT64_MAX, fsd->ImageAcquiredSemaphore, VK_NULL_HANDLE, &wd->FrameIndex);
+          check_vk_result(err);
+          fd = &wd->Frames[wd->FrameIndex];
+        }
         for (;;)
         {
             err = vkWaitForFences(v->Device, 1, &fd->Fence, VK_TRUE, 100);
             if (err == VK_SUCCESS) break;
             if (err == VK_TIMEOUT) continue;
             check_vk_result(err);
-        }
-        {
-            err = vkAcquireNextImageKHR(v->Device, wd->Swapchain, UINT64_MAX, fsd->ImageAcquiredSemaphore, VK_NULL_HANDLE, &wd->FrameIndex);
-            check_vk_result(err);
-            fd = &wd->Frames[wd->FrameIndex];
         }
         {
             err = vkResetCommandPool(v->Device, fd->CommandPool, 0);
