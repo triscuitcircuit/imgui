@@ -1446,6 +1446,7 @@ bool ImGui::SplitterBehavior(const ImRect& bb, ImGuiID id, ImGuiAxis axis, float
     if (!item_add)
         return false;
 
+    // Open on click
     bool hovered, held;
     ImRect bb_interact = bb;
     bb_interact.Expand(axis == ImGuiAxis_Y ? ImVec2(0.0f, hover_extend) : ImVec2(hover_extend, 0.0f));
@@ -2320,10 +2321,13 @@ bool ImGui::DragBehavior(ImGuiID id, ImGuiDataType data_type, void* p_v, float v
 bool ImGui::DragScalar(const char* label, ImGuiDataType data_type, void* p_data, float v_speed, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags)
 {
     ImGuiWindow* window = GetCurrentWindow();
+    ImGuiContext& g = *GImGui;
+
+    ImGuiNextWindowDataFlags backup_next_window_data_flags = g.NextWindowData.Flags;
+    g.NextWindowData.ClearFlags(); // We behave like Begin() and need to consume those values
     if (window->SkipItems)
         return false;
 
-    ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
     const ImGuiID id = window->GetID(label);
     const float w = CalcItemWidth();
